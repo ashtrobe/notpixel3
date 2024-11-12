@@ -44,4 +44,5 @@ win32-setctime==1.1.0
 yarl==1.9.4
 zope.interface==6.4.post2
 ua-generator==1.0.6
-pillow
+aiofile==3.9.0
+pillow==10.4.0
