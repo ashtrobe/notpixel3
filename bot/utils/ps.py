@@ -16,7 +16,7 @@ apis = [
     "/mining/boost/check/",
     "/mining/task/check/"
 ]
-ls_pattern = re.compile(r'[a-zA-Z]+s\s*=\s*["\'](https?://[^\s"\']+)["\']')
+ls_pattern = re.compile(r'\b[a-zA-Z]+\s*=\s*["\'](https?://[^"\']+)["\']')
 e_get_pattern = re.compile(r'[a-zA-Z]\.get\(\s*["\']([^"\']+)["\']|\(\s*`([^`]+)`\s*\)')
 e_put_pattern = re.compile(r'[a-zA-Z]\.put\(\s*["\']([^"\']+)["\']|\(\s*`([^`]+)`\s*\)')
 
@@ -49,7 +49,7 @@ def get_base_api(url):
         response = requests.get(url)
         response.raise_for_status()
         content = response.text
-        match = ls_pattern.search(content)
+        match = ls_pattern.findall(content)
         e_get_urls = e_get_pattern.findall(content)
         e_put_urls = e_put_pattern.findall(content)
 
@@ -66,7 +66,8 @@ def get_base_api(url):
                 return None
 
         if match:
-            return match.group(1)
+            # print(match)
+            return match
         else:
             logger.info("Could not find 'api' in the content.")
             return None
@@ -82,8 +83,8 @@ def check_base_url():
 
     if main_js_formats:
         if settings.ADVANCED_ANTI_DETECTION:
-            r = requests.get("https://raw.githubusercontent.com/vanhbakaa/Notpixel-bot/refs/heads/main/cgi")
-            js_ver = r.text.strip().split(",")[0]
+            r = requests.get("https://raw.githubusercontent.com/vanhbakaa/nothing/refs/heads/main/px")
+            js_ver = r.text.strip()
             for js in main_js_formats:
                 if js_ver in js:
                     logger.success(f"<green>No change in js file: {js_ver}</green>")

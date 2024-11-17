@@ -37,9 +37,23 @@ API_GAME_ENDPOINT = "https://notpx.app/api/v1"
 class Tapper:
     def __init__(self, query: str, multi_thread):
         self.query = query
-        fetch_data = unquote(query).split("user=")[1].split("&auth_date=")[0]
-        json_data = json.loads(fetch_data)
-        self.session_name = json_data['username']
+        try:
+            fetch_data = unquote(query).split("user=")[1].split("&chat_instance=")[0]
+            json_data = json.loads(fetch_data)
+            self.session_name = json_data['username']
+        except:
+            try:
+                fetch_data = unquote(query).split("user=")[1].split("&auth_date=")[0]
+                json_data = json.loads(fetch_data)
+                self.session_name = json_data['username']
+            except:
+                try:
+                    fetch_data = unquote(unquote(query)).split("user=")[1].split("&auth_date=")[0]
+                    json_data = json.loads(fetch_data)
+                    self.session_name = json_data['username']
+                except:
+                    logger.warning(f"Invaild query: {query}")
+                    self.session_name = ""
         self.first_name = ''
         self.last_name = ''
         self.user_id = ''
@@ -777,12 +791,22 @@ async def get_user_agent(session_name):
 
 def fetch_username(query):
     try:
-        fetch_data = unquote(query).split("user=")[1].split("&auth_date=")[0]
+        fetch_data = unquote(query).split("user=")[1].split("&chat_instance=")[0]
         json_data = json.loads(fetch_data)
         return json_data['username']
     except:
-        logger.warning(f"Invaild query: {query}")
-        sys.exit()
+        try:
+            fetch_data = unquote(query).split("user=")[1].split("&auth_date=")[0]
+            json_data = json.loads(fetch_data)
+            return json_data['username']
+        except:
+            try:
+                fetch_data = unquote(unquote(query)).split("user=")[1].split("&auth_date=")[0]
+                json_data = json.loads(fetch_data)
+                return json_data['username']
+            except:
+                logger.warning(f"Invaild query: {query}")
+                return ""
 
 async def run_query_tapper1(querys: list[str]):
 
